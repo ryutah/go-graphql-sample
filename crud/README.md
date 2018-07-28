@@ -106,3 +106,22 @@ curl -X POST -d '
   }' \
   http://localhost:8080/product
 ```
+
+### Fragment
+```
+curl -X POST -d '
+  query {
+    first: product(id: 1) {
+      ...custom
+    }
+    second: product(id: 2) {
+      ...custom
+    }
+  }
+  fragment custom on Product {
+    name,
+    info,
+    price
+  }' \
+  http://localhost:8080/product
+```
