@@ -3,7 +3,6 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"io/ioutil"
 	"log"
 	"math/rand"
 	"net/http"
@@ -115,7 +114,8 @@ var mutationType = graphql.NewObject(graphql.ObjectConfig{
 					price, priceOk = p.Args["price"].(float64)
 				)
 				product := Product{}
-				for _, p := range products {
+				for i := range products {
+					p := &products[i]
 					if int64(id) == p.ID {
 						if nameOk {
 							p.Name = name
@@ -126,7 +126,7 @@ var mutationType = graphql.NewObject(graphql.ObjectConfig{
 						if priceOk {
 							p.Price = price
 						}
-						product = p
+						product = *p
 						break
 					}
 				}
@@ -161,10 +161,11 @@ var schema, _ = graphql.NewSchema(
 	},
 )
 
-func executeQuery(query string, scheme graphql.Schema) *graphql.Result {
+func executeQuery(req *request, scheme graphql.Schema) *graphql.Result {
 	result := graphql.Do(graphql.Params{
-		Schema:        scheme,
-		RequestString: query,
+		Schema:         scheme,
+		RequestString:  req.Query,
+		VariableValues: req.Variables,
 	})
 	if len(result.Errors) > 0 {
 		log.Printf("errors: %v", result.Errors)
@@ -190,18 +191,37 @@ func initProductsData(p *[]Product) {
 	*p = append(*p, product1, product2, product3)
 }
 
+type request struct {
+	Query     string                 `json:"query"`
+	Variables map[string]interface{} `json:"variables"`
+}
+
+func parseRequest(r *http.Request) (*request, error) {
+	req := new(request)
+	err := json.NewDecoder(r.Body).Decode(req)
+	return req, err
+}
+
 func main() {
 	initProductsData(&products)
 
+	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "index.html")
+	})
+
+	http.HandleFunc("/static/app.js", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "app.js")
+	})
+
 	http.HandleFunc("/product", func(w http.ResponseWriter, r *http.Request) {
-		body, err := ioutil.ReadAll(r.Body)
+		req, err := parseRequest(r)
 		if err != nil {
 			http.Error(w, err.Error(), http.StatusInternalServerError)
 			return
 		}
 		defer r.Body.Close()
 
-		result := executeQuery(string(body), schema)
+		result := executeQuery(req, schema)
 		resp, _ := json.MarshalIndent(result, "", "  ")
 		fmt.Fprintf(w, "%s\n", resp)
 	})

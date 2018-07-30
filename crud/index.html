@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width">
+  <title></title>
+
+  <style>
+    .main {
+      width: 80%;
+      margin: 0 auto;
+    }
+
+    pre {
+      background: #ddd;
+      overflow-x: auto;
+      tab-size: 4;
+      -moz-tab-size: 4;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>GraphQL CRUD サンプル</h1>
+
+  <div class="main">
+    <div>
+      <h2>商品一覧</h2>
+      <input id="sendList" type="submit">
+      <pre id="productList"></pre>
+    </div>
+
+    <div>
+      <h2>商品取得</h2>
+      <form id="getProduct">
+        <input type="text" name="get-product-id" placeholder="商品ID">
+        <input id="sendGet" type="submit">
+        <pre id="productGet"></pre>
+      </form>
+    </div>
+
+    <div>
+      <h2>商品登録</h2>
+      <form id="createProduct">
+        <input type="text" name="create-product-name" placeholder="商品名">
+        <input type="text" name="create-product-info" placeholder="情報">
+        <input type="text" name="create-product-price" placeholder="価格">
+        <input id="sendCreate" type="submit">
+        <pre id="productCreate"></pre>
+      </form>
+    </div>
+
+    <div>
+      <h2>商品更新</h2>
+      <form id="updateProduct">
+        <input type="text" name="update-product-id" placeholder="商品ID">
+        <input type="text" name="update-product-name" placeholder="商品名">
+        <input type="text" name="update-product-info" placeholder="情報">
+        <input type="number" name="update-product-price" placeholder="価格">
+        <input id="sendUpdate" type="submit">
+        <pre id="productUpdate"></pre>
+      </form>
+    </div>
+
+    <div>
+      <h2>商品削除</h2>
+      <form id="deleteProduct">
+        <input type="text" name="delete-product-id" placeholder="商品ID">
+        <input id="sendDelete" type="submit">
+        <pre id="productDelete"></pre>
+      </form>
+    </div>
+
+  </div>
+  <script type="text/javascript" src="/static/app.js"></script>
+</body>
+
+</html>
